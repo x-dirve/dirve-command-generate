@@ -1,0 +1,25 @@
+{
+  "name": "dirve-command-generate",
+  "version": "1.0.0",
+  "description": "dirve project generate",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x-dirve/dirve-command-generate.git"
+  },
+  "keywords": [
+    "generate",
+    "dirve"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "colors": "0.6.2",
+    "debug": "1.0.2",
+    "ejs": "^2.6.1",
+    "inquirer": "^6.2.0",
+    "metalsmith": "^2.3.0"
+  }
+}

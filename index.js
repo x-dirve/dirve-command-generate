@@ -14,10 +14,15 @@ process.env.NODE_PATH = process.env.NODE_PATH ?
     localPath + ':' + process.env.NODE_PATH : localPath;
 
 function log(type, msg, color) {
-    color = color || 'grey';
-    var pad = Array(Math.max(0, 10 - type.length) + 1).join(' '),
-        m = type === 'error' ? type : 'log';
-    console[m]((pad + type).green, msg[color]);
+    var LOG_TYPE = {
+        error: 'ERROR',
+        log: 'INFO'
+    }
+    var COLOR = {
+        error: 'red',
+        log: 'green'
+    }
+    console[type](`[${LOG_TYPE[type][COLOR[type]]}] ${type}`);
 }
 
 function required(input) {
@@ -71,6 +76,15 @@ exports.register = function (commander) {
                     }
                 },
                 {
+                    type: 'confirm',
+                    name: 'isSub',
+                    default: false,
+                    message: 'page is subrouter ?',
+                    when: function(answers) {
+                        return answers.lib === 'vue' && answers.type === 'page'
+                    }
+                },
+                {
                     type: 'input',
                     name: 'filename',
                     validate: required
@@ -85,7 +99,7 @@ exports.register = function (commander) {
                     name: 'componentName',
                     validate: required,
                     when: function(answers) {
-                        return answers.type === 'component'
+                        return answers.type === 'component' && answers.lib === 'angular'
                     }
                 },
                 {
@@ -104,7 +118,7 @@ exports.register = function (commander) {
                 var dest = path.join(process.cwd(), opts.dest || '', meta.filename)
                 var doIt = function() {
                     generate(path.resolve(__dirname, `./template/${meta.platform}/${meta.lib}/${meta.type}`), dest, meta).then(re => {
-                        console.log('done')
+                        log('log', `[${meta.type}] generate in ${dest}`)
                     })
                 }
                 try {
@@ -114,7 +128,7 @@ exports.register = function (commander) {
                     doIt()
                 }
             }).catch(err => {
-                console.error(err)
+                log('error', err)
             })
         });
 };
@@ -137,18 +151,21 @@ function template(files, metalsmith, done) {
 
 function generate(src, dest, meta) {
     return new Promise((resolve, reject) => {
-        Metalsmith(__dirname)
-            .source(src)
-            .metadata(JSON.parse(JSON.stringify(meta)))
-            .destination(dest)
-            .use(template)
-            .build(function(err) {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve()
-                }
-            })
+        var ms = Metalsmith(__dirname).source(src)
+        if (!meta.isSub) {
+            ms.ignore('.sub')
+        }
+        ms
+        .metadata(JSON.parse(JSON.stringify(meta)))
+        .destination(dest)
+        .use(template)
+        .build(function(err) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve()
+            }
+        })
     }).catch(err => {
         log('error', err)
     })
