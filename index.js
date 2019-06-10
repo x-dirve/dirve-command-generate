@@ -22,7 +22,7 @@ function log(type, msg, color) {
         error: 'red',
         log: 'green'
     }
-    console[type](`[${LOG_TYPE[type][COLOR[type]]}] ${type}`);
+    console[type](`[${LOG_TYPE[type][COLOR[type]]}] ${msg}`);
 }
 
 function required(input) {
@@ -115,15 +115,15 @@ exports.register = function (commander) {
                     }
                 }
             ]).then(meta => {
-                var dest = path.join(process.cwd(), opts.dest || '', meta.filename)
+                var dest = path.join(process.cwd(), opts.dest || '')
                 var doIt = function() {
                     generate(path.resolve(__dirname, `./template/${meta.platform}/${meta.lib}/${meta.type}`), dest, meta).then(re => {
-                        log('log', `[${meta.type}] generate in ${dest}`)
+                        log('log', `[${meta.type}] ${meta.filename} generate in ${dest}`)
                     })
                 }
                 try {
-                    fs.accessSync(dest, fs.constants.R_OK | fs.constants.W_OK)
-                    throw new Error(`folder [${dest}] not empty`)
+                    fs.accessSync(path.join(dest, meta.filename), fs.constants.R_OK | fs.constants.W_OK)
+                    return Promise.reject(new Error(`folder [${dest}] not empty`))
                 } catch (err) {
                     doIt()
                 }
@@ -158,6 +158,7 @@ function generate(src, dest, meta) {
         ms
         .metadata(JSON.parse(JSON.stringify(meta)))
         .destination(dest)
+        .clean(false)
         .use(template)
         .build(function(err) {
             if (err) {

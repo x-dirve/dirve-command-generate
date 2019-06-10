@@ -3,7 +3,7 @@ var Vue = require('vue')
 module.exports = Vue.extend({
     template: __inline('./_view/<$= filename $>.tpl'),
     data: function() {
-        
+        return {}
     },
     beforeDestroy: function() {
 
@@ -17,6 +17,9 @@ module.exports = Vue.extend({
         }
     },
     methods: {
+        
+    },
+    components: {
         
     }
 })

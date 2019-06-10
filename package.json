@@ -1,6 +1,6 @@
 {
   "name": "dirve-command-generate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "dirve project generate",
   "main": "index.js",
   "scripts": {
