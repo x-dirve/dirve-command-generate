@@ -54,7 +54,7 @@ exports.register = function (commander) {
                 {
                     type: 'list',
                     name: 'lib',
-                    choices: ['angular', 'vue'],
+                    choices: ['angular', 'vue', 'wxapp'],
                     when: function(answers) {
                         return answers.platform === 'client'
                     }
@@ -72,7 +72,7 @@ exports.register = function (commander) {
                     name: 'type',
                     choices: ['component', 'page'],
                     when: function(answers) {
-                        return answers.lib === 'vue'
+                        return answers.lib === 'vue' || answers.lib === 'wxapp'
                     }
                 },
                 {

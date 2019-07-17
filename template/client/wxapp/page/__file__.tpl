@@ -1,0 +1,1 @@
+<view class="P-<$= className $>"></view>
